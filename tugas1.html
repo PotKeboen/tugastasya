@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DobarakkCoffee - AI Powered Cafe & POS</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#2d2018;
+    color:white;
+}
+
+.app{
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+}
+
+.pages{
+    display:flex;
+    width:500vw;
+    height:100vh;
+    transition:transform .6s ease;
+}
+
+.page{
+    width:100vw;
+    height:100vh;
+    flex-shrink:0;
+    padding:90px 25px 30px;
+    overflow-y:auto;
+}
+
+nav{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    padding:18px 25px;
+    background:rgba(35,22,17,.92);
+    backdrop-filter:blur(10px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:9999;
+}
+
+.logo{
+    color:#d4a373;
+    font-size:24px;
+    font-weight:700;
+}
+
+.nav-links{
+    display:flex;
+    gap:12px;
+}
+
+.nav-links button{
+    background:none;
+    border:none;
+    color:white;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+}
+
+.nav-links button:hover{
+    color:#d4a373;
+}
+
+/* HOME & BANNER */
+.home{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.home-banner{
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=80');
+    background-size: cover;
+    background-position: center;
+    padding: 60px 20px;
+    border-radius: 25px;
+    margin-bottom: 20px;
+}
+
+.home h1{
+    font-size:52px;
+    color:#d4a373;
+    margin-bottom:15px;
+}
+
+.home p{
+    max-width:650px;
+    line-height:1.8;
+    color:#eee;
+}
+
+.address-tag{
+    margin-top:10px;
+    background:#3a2a24;
+    padding:6px 16px;
+    border-radius:20px;
+    font-size:14px;
+    color:#d4a373;
+    display: inline-block;
+}
+
+.btn{
+    margin-top:25px;
+    border:none;
+    padding:15px 35px;
+    border-radius:40px;
+    background:#d4a373;
+    color:#1f140f;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-5px);
+}
+
+.coffee-cup{
+    font-size:70px;
+    margin-top:20px;
+    animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-15px); }
+}
+
+.section-title{
+    text-align:center;
+    color:#d4a373;
+    margin-bottom:30px;
+    font-size:32px;
+}
+
+.category-title{
+    color:#d4a373;
+    margin:25px 0 15px;
+    font-size:24px;
+}
+
+/* MENU GRID */
+.menu-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.menu-card{
+    background:#3a2a24;
+    border-radius:25px;
+    padding:20px;
+    text-align:center;
+    transition:.3s;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    cursor: pointer;
+}
+
+.menu-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 15px 30px rgba(0,0,0,.35);
+}
+
+.menu-icon{ font-size:40px; margin-bottom:10px; }
+.price{ display:block; color:#d4a373; font-weight:700; font-size:18px; margin:8px 0; }
+.stock-info{ font-size:13px; color:#aaa; margin-bottom:12px; }
+
+.order-btn{
+    border:none;
+    padding:10px 20px;
+    border-radius:30px;
+    background:#d4a373;
+    color:#1d120d;
+    font-weight:600;
+    cursor:pointer;
+    width:100%;
+}
+
+.order-btn:disabled{
+    background: #666;
+    cursor: not-allowed;
+}
+
+/* AI RECOMMENDER CARD */
+.ai-card{
+    background: linear-gradient(135deg, #4a3328, #2d2018);
+    border: 2px solid #d4a373;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.ai-result{
+    margin-top: 20px;
+    padding: 15px;
+    background: #3a2a24;
+    border-radius: 12px;
+    display: none;
+}
+
+/* KASIR / SIMULASI */
+.pos-container{
+    max-width:800px;
+    margin:0 auto;
+    background:#3a2a24;
+    padding:25px;
+    border-radius:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:5px;
+    color:#d4a373;
+}
+
+.form-group select, .form-group input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    background:#2d2018;
+    color:white;
+    font-size:15px;
+}
+
+.summary-box{
+    background:#2d2018;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+    font-size:15px;
+}
+
+.summary-row.total{
+    border-top:1px solid #555;
+    padding-top:10px;
+    font-weight:700;
+    color:#d4a373;
+    font-size:18px;
+}
+
+/* DASHBOARD */
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+    max-width:1000px;
+    margin:0 auto 30px;
+}
+
+.dash-card{
+    background:#3a2a24;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+}
+
+.dash-card h3{ font-size:14px; color:#aaa; margin-bottom:10px; }
+.dash-card .value{ font-size:24px; font-weight:700; color:#d4a373; }
+
+.table-container{
+    max-width:1000px;
+    margin:0 auto;
+    background:#3a2a24;
+    padding:20px;
+    border-radius:15px;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    text-align:left;
+}
+
+th, td{
+    padding:12px;
+    border-bottom:1px solid #4a3a34;
+}
+
+th{ color:#d4a373; }
+
+/* CONTACT */
+.contact-box{ display:flex; justify-content:center; align-items:center; }
+.contact-card{ max-width:650px; background:#3a2a24; padding:30px; border-radius:25px; text-align:center; width:100%; }
+.contact-card h3{ color:#d4a373; margin-bottom:15px; }
+.contact-card p{ line-height:1.8; margin-bottom:15px; }
+.contact-buttons{ display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:20px; }
+.contact-buttons a{ text-decoration:none; background:#d4a373; color:#1d120d; padding:12px 22px; border-radius:30px; font-weight:600; }
+
+.floating-wa{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:30px;
+    z-index:999;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    z-index:99999;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content{
+    background:#3a2a24;
+    color:white;
+    padding:25px;
+    border-radius:25px;
+    width:90%;
+    max-width:450px;
+    text-align:center;
+    position: relative;
+    border: 1px solid #d4a373;
+}
+
+.close{ position: absolute; right: 20px; top: 15px; font-size:30px; cursor:pointer; color: #d4a373; }
+.qris-img{ width:100%; max-width:220px; margin:15px auto; border-radius:10px; }
+.confirm-btn{ display:inline-block; margin-top:15px; text-decoration:none; background:#25D366; color:white; padding:12px 20px; border-radius:30px; font-weight:600; width:100%; }
+
+@media(max-width:768px){
+    .home h1{ font-size:36px; }
+    .nav-links button{ font-size:12px; }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">☕ DobarakkCoffee</div>
+    <div class="nav-links">
+        <button onclick="goPage(0)">🏠 Home</button>
+        <button onclick="goPage(1)">🍽️ Menu</button>
+        <button onclick="goPage(2)">🤖 AI Sommelier</button>
+        <button onclick="goPage(3)">🛒 Transaksi</button>
+        <button onclick="goPage(4)">📊 Dashboard</button>
+    </div>
+</nav>
+
+<div class="app">
+<div class="pages" id="pages">
+
+<!-- HOME / BANNER -->
+<section class="page home">
+    <div class="home-banner">
+        <h1>DobarakkCoffee</h1>
+        <p>Nikmati setiap cerita dalam secangkir kopi. Tempat nongkrong dengan suasana vintage, dessert lezat, dan makanan favorit.</p>
+        <div class="address-tag">📍 Lokasi: SMKN 6</div>
+    </div>
+    <button class="btn" onclick="goPage(1)">☕ Lihat Menu & Produk</button>
+    <div class="coffee-cup">☕</div>
+</section>
+
+<!-- MENU / PRODUCT PAGE -->
+<section class="page">
+    <h2 class="section-title">☕ Our Menu & Products</h2>
+    <p style="text-align:center; color:#aaa; margin-bottom:20px;">*Klik pada produk untuk melihat Halaman Detail Produk</p>
+    <div id="menuContainer"></div>
+</section>
+
+<!-- FITUR AI RECOMMENDER -->
+<section class="page">
+    <h2 class="section-title">🤖 AI Menu Recommender</h2>
+    <div class="ai-card">
+        <h3>Bingung mau pesan apa? Serahkan pada AI!</h3>
+        <p style="margin:10px 0 20px; font-size:14px; color:#ddd;">Sistem AI akan menganalisis kebutuhan dan suasana hati kamu untuk memberikan rekomendasi menu terbaik.</p>
+        
+        <div class="form-group">
+            <label>1. Suasana Hati / Kondisi Kamu Saat Ini:</label>
+            <select id="aiMood">
+                <option value="ngantuk">😴 Mengantuk / Butuh Fokus</option>
+                <option value="santai">😊 Santai / Sekadar Nongkrong</option>
+                <option value="lapar">😋 Lapar Berat</option>
+                <option value="manis">🍩 Ingin Cemilan Manis</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>2. Waktu Kunjungan:</label>
+            <select id="aiTime">
+                <option value="pagi">🌅 Pagi Hari</option>
+                <option value="siang">☀️ Siang / Sore</option>
+                <option value="malam">🌙 Malam Hari</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="runAiRecommendation()">✨ Rekomendasikan Sekarang</button>
+
+        <div id="aiResult" class="ai-result">
+            <h4 id="aiMenuTitle" style="color:#d4a373; font-size:20px;">-</h4>
+            <p id="aiMenuReason" style="margin:8px 0; font-size:14px;"></p>
+            <button class="order-btn" id="aiOrderBtn" style="margin-top:10px;">Pesan Rekomendasi Ini</button>
+        </div>
+    </div>
+</section>
+
+<!-- SIMULASI TRANSAKSI -->
+<section class="page">
+    <h2 class="section-title">🛒 Simulasi Transaksi POS</h2>
+    <div class="pos-container">
+        <form id="orderForm" onsubmit="processTransaction(event)">
+            <div class="form-group">
+                <label for="productSelect">Pilih Produk</label>
+                <select id="productSelect" onchange="calculateTotal()" required></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantityInput">Jumlah Pembelian</label>
+                <input type="number" id="quantityInput" min="1" value="1" oninput="calculateTotal()" required>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Harga Satuan:</span>
+                    <span id="unitPrice">Rp0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subTotal">Rp0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Diskon (10% jika Subtotal ≥ Rp100rb):</span>
+                    <span id="discountVal">Rp0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total Pembayaran:</span>
+                    <span id="grandTotal">Rp0</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" style="width:100%; margin-top:20px;">Bayar Sekarang</button>
+        </form>
+    </div>
+</section>
+
+<!-- DASHBOARD PENJUALAN -->
+<section class="page">
+    <h2 class="section-title">📊 Dashboard Penjualan</h2>
+    
+    <div class="dashboard-grid">
+        <div class="dash-card">
+            <h3>Total Jenis Produk</h3>
+            <div class="value" id="dashTotalProducts">0</div>
+        </div>
+        <div class="dash-card">
+            <h3>Total Transaksi</h3>
+            <div class="value" id="dashTotalTx">0</div>
+        </div>
+        <div class="dash-card">
+            <h3>Total Penjualan</h3>
+            <div class="value" id="dashTotalSales">Rp0</div>
+        </div>
+        <div class="dash-card">
+            <h3>Produk Terlaris</h3>
+            <div class="value" id="dashBestSeller" style="font-size:18px;">-</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <h3 style="color:#d4a373; margin-bottom:15px;">Stok Produk Real-time</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Nama Produk</th>
+                    <th>Harga</th>
+                    <th>Terjual</th>
+                    <th>Sisa Stok</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody"></tbody>
+        </table>
+    </div>
+</section>
+
+</div>
+</div>
+
+<a class="floating-wa" href="https://wa.me/6285772178219?text=Halo%20DobarakkCoffee,%20saya%20ingin%20memesan." target="_blank">💬</a>
+
+<!-- MODAL DETAIL PRODUK -->
+<div class="modal" id="detailModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDetailModal()">&times;</span>
+        <div id="modalProductIcon" style="font-size: 60px; margin-bottom: 10px;">☕</div>
+        <h2 id="modalProductName" style="color: #d4a373;">Nama Produk</h2>
+        <p id="modalProductCategory" style="color: #aaa; font-size: 14px; margin-bottom: 10px;">Kategori</p>
+        <p id="modalProductDesc" style="margin-bottom: 15px;">Deskripsi lengkap produk.</p>
+        <h3 id="modalProductPrice" style="color: #d4a373; margin-bottom: 10px;">Rp0</h3>
+        <p id="modalProductStock" style="margin-bottom: 20px;">Sisa Stok: 0</p>
+        <button class="order-btn" id="modalBuyBtn">Beli / Transaksi Sekarang</button>
+    </div>
+</div>
+
+<!-- QRIS MODAL -->
+<div class="modal" id="qrModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeQR()">&times;</span>
+        <h2 style="color:#d4a373;">💳 Pembayaran QRIS</h2>
+        <p>Scan QRIS Dana di bawah ini.</p>
+        <img src="https://via.placeholder.com/250x250?text=QRIS+Dobarakk" class="qris-img" alt="QRIS">
+        <h3>DobarakkCoffee</h3>
+        <p>085772178219</p>
+        <a class="confirm-btn" id="waConfirmBtn" href="#" target="_blank">Konfirmasi ke WhatsApp</a>
+    </div>
+</div>
+
+<script>
+// DATA PRODUK
+const products = [
+    // Coffee
+    { id: 1, name: "Espresso", category: "Coffee", price: 18000, stock: 20, sold: 0, icon: "☕", desc: "Kopi hitam konsentrat pekat khas Italia dengan aroma kaya." },
+    { id: 2, name: "Americano", category: "Coffee", price: 20000, stock: 25, sold: 0, icon: "🥤", desc: "Espresso murni diseduh dengan air panas segar." },
+    { id: 3, name: "Cappuccino", category: "Coffee", price: 25000, stock: 15, sold: 0, icon: "🥛", desc: "Kopi espresso berpadu dengan foam susu yang lembut." },
+    { id: 4, name: "Cafe Latte", category: "Coffee", price: 27000, stock: 18, sold: 0, icon: "🧋", desc: "Kopi espresso creamy dipadukan dengan steamed milk nikmat." },
+    { id: 5, name: "Mocha", category: "Coffee", price: 28000, stock: 12, sold: 0, icon: "🍫", desc: "Perpaduan rasa kopi espresso premium dan rasa cokelat melimpah." },
+    { id: 6, name: "Caramel Macchiato", category: "Coffee", price: 30000, stock: 10, sold: 0, icon: "🌰", desc: "Manis dengan aroma wangi sirup caramel berpadu espresso." },
+    // Dessert
+    { id: 7, name: "Cheesecake", category: "Dessert", price: 25000, stock: 10, sold: 0, icon: "🍰", desc: "Kue keju panggang lembut dengan rasa gurih manis berimbang." },
+    { id: 8, name: "Brownies", category: "Dessert", price: 18000, stock: 15, sold: 0, icon: "🍫", desc: "Kue cokelat panggang padat bertabur chocochip lezat." },
+    { id: 9, name: "Croissant", category: "Dessert", price: 20000, stock: 12, sold: 0, icon: "🥐", desc: "Pastry renyah bergaya Perancis dengan mentega pilihan." },
+    { id: 10, name: "Donat", category: "Dessert", price: 15000, stock: 20, sold: 0, icon: "🍩", desc: "Donat lembut dengan aneka pilihan topping manis." },
+    { id: 11, name: "Tiramisu", category: "Dessert", price: 28000, stock: 8, sold: 0, icon: "🍮", desc: "Dessert khas Italia bertingkat krim dan bubuk cokelat." },
+    { id: 12, name: "Banana Cake", category: "Dessert", price: 20000, stock: 10, sold: 0, icon: "🍌", desc: "Kue bolu pisang harum manis buatan rumahan." },
+    // Food
+    { id: 13, name: "Nasi Goreng Spesial", category: "Food", price: 30000, stock: 15, sold: 0, icon: "🍛", desc: "Nasi goreng rasa rempah khas disajikan dengan telur dan ayam." },
+    { id: 14, name: "Spaghetti Bolognese", category: "Food", price: 35000, stock: 10, sold: 0, icon: "🍝", desc: "Pasta ala Italia dengan saus keju dan daging cincang segar." },
+    { id: 15, name: "Chicken Steak", category: "Food", price: 40000, stock: 8, sold: 0, icon: "🍗", desc: "Dada ayam panggang disajikan lengkap dengan kentang dan saus." },
+    { id: 16, name: "French Fries", category: "Food", price: 18000, stock: 25, sold: 0, icon: "🍟", desc: "Kentang goreng gurih renyah cocok untuk teman ngobrol." },
+    { id: 17, name: "Chicken Wings", category: "Food", price: 28000, stock: 12, sold: 0, icon: "🍖", desc: "Sayap ayam goreng berbumbu BBQ pedas gurih." },
+    { id: 18, name: "Onion Rings", category: "Food", price: 20000, stock: 15, sold: 0, icon: "🧅", desc: "Bawang bombay balut tepung renyah bercita rasa gurih." }
+];
+
+let totalTransactions = 0;
+let totalSalesVolume = 0;
+let lastOrderDetails = null;
+
+// NAVIGASI HALAMAN
+function goPage(index){
+    document.getElementById("pages").style.transform = "translateX(-" + (index * 100) + "vw)";
+}
+
+// FORMAT RUPIAH
+function formatRupiah(num){
+    return "Rp" + num.toLocaleString('id-ID');
+}
+
+// RENDER MENU PRODUK
+function renderMenu(){
+    const container = document.getElementById("menuContainer");
+    container.innerHTML = "";
+
+    const categories = ["Coffee", "Dessert", "Food"];
+    categories.forEach(cat => {
+        const catTitle = document.createElement("h3");
+        catTitle.className = "category-title";
+        catTitle.innerText = (cat === "Coffee" ? "☕ " : cat === "Dessert" ? "🍰 " : "🍔 ") + cat;
+        container.appendChild(catTitle);
+
+        const grid = document.createElement("div");
+        grid.className = "menu-grid";
+
+        products.filter(p => p.category === cat).forEach(p => {
+            const card = document.createElement("div");
+            card.className = "menu-card";
+            const isOutOfStock = p.stock <= 0;
+            
+            // Klik card membuka Modal Detail Produk
+            card.onclick = (e) => {
+                if(!e.target.classList.contains('order-btn')) {
+                    openDetailModal(p.id);
+                }
+            };
+
+            card.innerHTML = `
+                <div>
+                    <div class="menu-icon">${p.icon}</div>
+                    <h4>${p.name}</h4>
+                    <p style="font-size:12px; color:#aaa; margin-top:5px;">${p.desc.substring(0, 35)}...</p>
+                </div>
+                <div>
+                    <span class="price">${formatRupiah(p.price)}</span>
+                    <div class="stock-info">Stok: ${p.stock}</div>
+                    <button class="order-btn" onclick="directOrder(${p.id})" ${isOutOfStock ? 'disabled' : ''}>
+                        ${isOutOfStock ? 'Stok Habis' : 'Pesan Sekarang'}
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+        container.appendChild(grid);
+    });
+}
+
+// MODAL DETAIL PRODUK
+function openDetailModal(productId){
+    const product = products.find(p => p.id === productId);
+    if(!product) return;
+
+    document.getElementById("modalProductIcon").innerText = product.icon;
+    document.getElementById("modalProductName").innerText = product.name;
+    document.getElementById("modalProductCategory").innerText = "Kategori: " + product.category;
+    document.getElementById("modalProductDesc").innerText = product.desc;
+    document.getElementById("modalProductPrice").innerText = formatRupiah(product.price);
+    document.getElementById("modalProductStock").innerText = "Sisa Stok: " + product.stock;
+
+    const buyBtn = document.getElementById("modalBuyBtn");
+    if(product.stock <= 0){
+        buyBtn.innerText = "Stok Habis";
+        buyBtn.disabled = true;
+    } else {
+        buyBtn.innerText = "Beli / Transaksi Sekarang";
+        buyBtn.disabled = false;
+        buyBtn.onclick = function(){
+            closeDetailModal();
+            directOrder(product.id);
+        }
+    }
+
+    document.getElementById("detailModal").style.display = "flex";
+}
+
+function closeDetailModal(){
+    document.getElementById("detailModal").style.display = "none";
+}
+
+// DROPDOWN KASIR
+function populateSelect(){
+    const select = document.getElementById("productSelect");
+    select.innerHTML = "";
+    products.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.disabled = p.stock <= 0;
+        opt.innerText = `${p.name} - ${formatRupiah(p.price)} (Stok: ${p.stock}) ${p.stock <= 0 ? '[HABIS]' : ''}`;
+        select.appendChild(opt);
+    });
+}
+
+// SISTEM AI RECOMMENDER
+function runAiRecommendation(){
+    const mood = document.getElementById("aiMood").value;
+    const time = document.getElementById("aiTime").value;
+    
+    let targetId = 1;
+    let reason = "";
+
+    if(mood === "ngantuk"){
+        targetId = 1; // Espresso
+        reason = "AI mendeteksi Anda butuh dorongan kafein tinggi untuk memulihkan energi secara instan!";
+    } else if(mood === "lapar"){
+        targetId = 13; // Nasi Goreng
+        reason = "Untuk kondisi lapar berat, porsi kaya rempah dari Nasi Goreng Spesial adalah solusi sempurna!";
+    } else if(mood === "manis"){
+        targetId = 7; // Cheesecake
+        reason = "Kombinasi keju lembut dan manisnya Cheesecake siap membangkitkan kebahagiaan Anda.";
+    } else {
+        if(time === "malam"){
+            targetId = 9; // Croissant
+            reason = "Menikmati Croissant hangat bersama minuman santai sangat cocok untuk menutup malam Anda.";
+        } else {
+            targetId = 4; // Cafe Latte
+            reason = "Keseimbangan sempurna espresso dan susu hangat pada Cafe Latte sangat pas menemani waktu santai.";
+        }
+    }
+
+    const recProduct = products.find(p => p.id === targetId);
+
+    document.getElementById("aiMenuTitle").innerText = `${recProduct.icon} ${recProduct.name} (${formatRupiah(recProduct.price)})`;
+    document.getElementById("aiMenuReason").innerText = `"${reason}"`;
+    
+    const aiBtn = document.getElementById("aiOrderBtn");
+    aiBtn.onclick = function(){ directOrder(recProduct.id); };
+    
+    document.getElementById("aiResult").style.display = "block";
+}
+
+// HITUNG SIMULASI TRANSAKSI
+function calculateTotal(){
+    const pId = parseInt(document.getElementById("productSelect").value);
+    const qtyInput = document.getElementById("quantityInput");
+    let qty = parseInt(qtyInput.value) || 0;
+    
+    if(qty < 1) qty = 1;
+
+    const product = products.find(p => p.id === pId);
+    if(!product) return;
+
+    const unitPrice = product.price;
+    const subtotal = unitPrice * qty;
+    
+    // Rumus Diskon 10% jika transaksi >= Rp100.000
+    let discount = 0;
+    if(subtotal >= 100000){
+        discount = subtotal * 0.1;
+    }
+    const grandTotal = subtotal - discount;
+
+    document.getElementById("unitPrice").innerText = formatRupiah(unitPrice);
+    document.getElementById("subTotal").innerText = formatRupiah(subtotal);
+    document.getElementById("discountVal").innerText = formatRupiah(discount);
+    document.getElementById("grandTotal").innerText = formatRupiah(grandTotal);
+}
+
+// PESAN LANGSUNG DARI MENU ATAL AI
+function directOrder(id){
+    goPage(3); // Ke halaman Transaksi (indeks 3)
+    document.getElementById("productSelect").value = id;
+    document.getElementById("quantityInput").value = 1;
+    calculateTotal();
+}
+
+// PROSES TRANSAKSI
+function processTransaction(e){
+    e.preventDefault();
+    const pId = parseInt(document.getElementById("productSelect").value);
+    const qty = parseInt(document.getElementById("quantityInput").value);
+    const product = products.find(p => p.id === pId);
+
+    if(qty > product.stock){
+        alert("Stok tidak mencukupi! Sisa stok saat ini: " + product.stock);
+        return;
+    }
+
+    // Pemotongan Stok
+    product.stock -= qty;
+    product.sold += qty;
+
+    const subtotal = product.price * qty;
+    let discount = subtotal >= 100000 ? subtotal * 0.1 : 0;
+    const grandTotal = subtotal - discount;
+
+    totalTransactions++;
+    totalSalesVolume += grandTotal;
+
+    lastOrderDetails = {
+        name: product.name,
+        qty: qty,
+        total: grandTotal
+    };
+
+    updateDashboard();
+    renderMenu();
+    populateSelect();
+    
+    document.getElementById("orderForm").reset();
+    calculateTotal();
+    openQR();
+}
+
+// UPDATE DASHBOARD
+function updateDashboard(){
+    document.getElementById("dashTotalProducts").innerText = products.length;
+    document.getElementById("dashTotalTx").innerText = totalTransactions;
+    document.getElementById("dashTotalSales").innerText = formatRupiah(totalSalesVolume);
+
+    let bestSeller = products.reduce((prev, current) => (prev.sold > current.sold) ? prev : current);
+    document.getElementById("dashBestSeller").innerText = bestSeller.sold > 0 ? `${bestSeller.name} (${bestSeller.sold})` : "-";
+
+    const tbody = document.getElementById("stockTableBody");
+    tbody.innerHTML = "";
+    products.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${p.category}</td>
+            <td>${p.name}</td>
+            <td>${formatRupiah(p.price)}</td>
+            <td>${p.sold}</td>
+            <td><strong>${p.stock}</strong></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// QRIS MODAL
+function openQR(){
+    document.getElementById("qrModal").style.display = "flex";
+    if(lastOrderDetails){
+        const waMsg = `Halo DobarakkCoffee, saya sudah melakukan pembayaran QRIS untuk pesanan: ${lastOrderDetails.name} (x${lastOrderDetails.qty}) dengan total ${formatRupiah(lastOrderDetails.total)}`;
+        document.getElementById("waConfirmBtn").href = "https://wa.me/6285772178219?text=" + encodeURIComponent(waMsg);
+    }
+}
+
+function closeQR(){
+    document.getElementById("qrModal").style.display = "none";
+}
+
+window.onclick = function(e){
+    if(e.target === document.getElementById("qrModal")) closeQR();
+    if(e.target === document.getElementById("detailModal")) closeDetailModal();
+}
+
+// INITIALIZATION
+renderMenu();
+populateSelect();
+updateDashboard();
+calculateTotal();
+</script>
+
+</body>
+</html>
